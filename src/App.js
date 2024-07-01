@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -12,22 +12,15 @@ import UpdatePlace from "./places/pages/UpdatePlace";
 import Auth from "./user/pages/Auth.js";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
+import { useAuth } from "./shared/hooks/auth-hook.js";
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const login = useCallback(() => {
-    setIsLoggedIn(true);
-  }, []);
-
-  const logout = useCallback(() => {
-    setIsLoggedIn(false);
-  }, []);
-
+  const {token, login, logout, userId} = useAuth();
   let routes;
-  if (isLoggedIn) {
+  if (token) {
     routes = (
-      <>
+      <Switch>
         <Route path="/" exact>
           <Users />
         </Route>
@@ -39,35 +32,39 @@ const App = () => {
         </Route>
         <Route path="/places/:placeId">
           <UpdatePlace />
-          <Redirect to="/" />
         </Route>
-      </>
+        <Redirect to="/" />
+      </Switch>
     );
   } else {
     routes = (
-      <>
+      <Switch>
         <Route path="/" exact>
           <Users />
         </Route>
-        <Route path="/:userId/places">
+        <Route path="/:userId/places" exact>
           <UserPlaces />
         </Route>
         <Route path="/auth">
           <Auth />
         </Route>
         <Redirect to="/auth" />
-      </>
+      </Switch>
     );
   }
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
+      value={{
+        isLoggedIn: !!token,
+        token: token,
+        userId: userId,
+        login: login,
+        logout: logout,
+      }}
     >
       <Router>
         <MainNavigation />
-        <main>
-          <Switch>{routes}</Switch>
-        </main>
+        <main>{routes}</main>
       </Router>
     </AuthContext.Provider>
   );
