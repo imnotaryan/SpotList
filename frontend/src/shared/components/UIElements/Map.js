@@ -4,7 +4,7 @@ import ReactMapGl, { Marker } from "react-map-gl";
 import { FaLocationDot } from "react-icons/fa6";
 
 import "./Map.css";
-const token = process.env.REACT_APP_TOKEN;
+const token=process.env.REACT_APP_TOKEN;
 
 const Maps = (props) => {
   const [viewPort, setViewPort] = useState({
@@ -14,7 +14,7 @@ const Maps = (props) => {
   }); 
   useEffect( ()=>{
     navigator.geolocation.getCurrentPosition((position)=>{
-      console.log(position.coords)
+      // console.log(position.coords)
     })
   }, []);
   return (
